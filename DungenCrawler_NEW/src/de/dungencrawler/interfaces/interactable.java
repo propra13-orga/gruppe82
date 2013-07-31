@@ -2,6 +2,6 @@ package de.dungencrawler.interfaces;
 
 import de.dungencrawler.sprites.Spieler;
 
-public interface Interactable {
+public interface interactable {
 	public void doInteraction(Spieler sp);
 }

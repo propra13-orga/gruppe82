@@ -4,7 +4,6 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import de.dungencrawler.Spielfeld;
-import de.dungencrawler.interfaces.Caster;
 import de.dungencrawler.sprites.DynamicSprite;
 import de.dungencrawler.sprites.Slash;
 import de.dungencrawler.sprites.Spell;
@@ -16,14 +15,11 @@ public class Enemy extends DynamicSprite {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final double MAGIC_RESITANCE = 10;
-	private static final double ARMOR = 10;
 	private int moveCnt = 0;
 	public Enemy(String name, BufferedImage[] i, double x, double y,
 			long delay, Spielfeld p) {
 		super(name, i, x, y, delay, p);
-		life = 5;
-		MAX_LIFE = 5;
+		life = 1;
 		speed = 200;
 	}
 	@Override
@@ -53,7 +49,7 @@ public class Enemy extends DynamicSprite {
 	private void randomMove() {
 	moveCnt ++;
 		
-		if(moveCnt > 7500 * Math.random()) {   
+		if(moveCnt > 7500 * Math.random()) {
 			double x = Math.random();
 			if(x < 0.5) {
 				setHorizontalSpeed(-speed);
@@ -63,6 +59,7 @@ public class Enemy extends DynamicSprite {
 			}
 			moveCnt = 0;
 		}
+		
 	}
 	@SuppressWarnings("unused")
 	private void crazyRandomMove() {
@@ -103,9 +100,19 @@ public class Enemy extends DynamicSprite {
 	@Override
 	public void drawObjects(Graphics g) {
 		super.drawObjects(g);
-//		for(int i = 0; i < this.life; i++) {
-//			g.drawImage(herz[0], (int)(this.x + herz[0].getWidth()*i + 1) , (int)(this.y + this.height), null);
-//		}
-		drawHealth(g);
+		for(int i = 0; i < this.life; i++) {
+			g.drawImage(herz[0], (int)(this.x + herz[0].getWidth()*i + 1) , (int)(this.y + this.height), null);
+		}
+	}
+	
+	public void hit(Sprite s) {
+		if ( s instanceof Spell) {
+			this.life -= 1;
+		} else if (s instanceof Slash) {
+			this.life -= 1;
+		}
+		if(this.life <= 0) {
+			parent.removeActor(this);
+		}
 	}
 }
