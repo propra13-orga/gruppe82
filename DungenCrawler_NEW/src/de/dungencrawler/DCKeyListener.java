@@ -5,8 +5,10 @@ import java.awt.event.KeyListener;
 
 public class DCKeyListener implements KeyListener {
 	private Spielfeld parent;
-	
-	public DCKeyListener(Spielfeld parent) {
+	private boolean server = false;
+	private boolean client = false;
+
+	public DCKeyListener(Spielfeld parent) { //Konstrucktor
 		this.parent = parent;
 	}
 
@@ -48,10 +50,35 @@ public class DCKeyListener implements KeyListener {
 
 		}
 		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-			if (!parent.isStarted()) {
-				parent.doInitializations();
-				parent.setStarted(true);
+			System.out.println("Started 1: " + parent.isStarted());
+			if(parent.isStarted() && parent.isPaused()) {
+				System.out.println("NextView or NextMap");
+				if(!parent.nextView())
+					parent.nextMap();
 			}
+			if (!parent.isStarted()) {
+				if(parent.isPaused()) {
+					if(!parent.isViewerStarted())
+						parent.beginStory();
+					if(!parent.nextView())
+						parent.setPaused(false);
+				} else if(parent.TEST_LEVEL_ON) {
+					parent.doInitializationsTestLevel();
+					parent.setStarted(true);
+				} else {
+					if(server ) {
+						parent.startNetworkGameAsServer();
+						parent.setStarted(true);
+					} else if(client) {
+						parent.startNetworkGameAsClient();
+						parent.setStarted(true);
+					} else {
+						parent.doInitializations();
+						parent.setStarted(true);
+					}
+				}
+			}
+			System.out.println("Started 2: " + parent.isStarted());
 		}
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 			if (parent.isStarted()) {
@@ -61,17 +88,17 @@ public class DCKeyListener implements KeyListener {
 			}
 		}
 		if (e.getKeyCode() == KeyEvent.VK_W) {
-			parent.throwFireBall(true);
+			parent.throwSpell(true); //Teilt dem Spiel, bei betätigen von "W", mit dass der Spieler den momentan gewählten Zauberspruch wirken soll.
 		}
 		if (e.getKeyCode() == KeyEvent.VK_Q) {
-			parent.slash();
+			parent.slash(); //Teilt dem Spiel, bei betätigen von "Q", mit dass der Spieler den normalen Angriff wirken soll.
 		}
 		if (e.getKeyCode() == KeyEvent.VK_E) {
-			parent.switchSpell();
+			parent.switchSpell(); //Teilt dem Spiel, bei betätigen von E, mit dass der Zauberspruch gewechselt werden soll.
 		}
 		
 		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-			parent.interAction();
+			parent.interAction(); //Teilt dem Spiel, bei betätigen von SPACE, mit dass die Spielfigur mit etwas interagieren will.
 		}
 	}
 
